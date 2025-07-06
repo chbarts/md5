@@ -34,18 +34,61 @@ static char *readfile(FILE *inf, size_t *len)
     return data;
 }
 
+static void help(char pnam[])
+{
+    printf("%s [OPTION] [FILES]...\n", pnam);
+    puts("Compute the MD5 sum of files or standard input.");
+    puts("");
+    puts(" -h, --help        Print this help");
+    puts(" -v, --version     Print version information");
+    puts(" --                Stop processing arguments");
+    puts("");
+    puts("Report bugs to <chbarts@gmail.com>.");
+}
+
+static void version(void)
+{
+    puts("md5 version 0.1");
+    puts("Copyright 2025, Chris Barts <chbarts@gmail.com>");
+    puts("Licensed under the GNU General Public License, version 3.0 or, at your option, any later version.");
+    puts("This software has NO WARRANTY, even for USABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
+}
+
 int main(int argc, char *argv[])
 {
     uint8_t digest[16];
     char *data;
     size_t len;
     FILE *inf;
-    int i, j;
+    int i = 1, j;
 
-    for (i = 1; i < argc; i++) {
-        if ((inf = fopen(argv[i], "rb")) == NULL) {
-            perror(argv[i]);
-            continue;
+    if (1 == argc) {
+        help(argv[0]);
+        return 0;
+    }
+
+    if (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")) {
+        help(argv[0]);
+        return 0;
+    }
+
+    if (!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v")) {
+        version();
+        return 0;
+    }
+
+    if (!strcmp("--", argv[1])) {
+        i = 2;
+    }
+
+    for (; i < argc; i++) {
+        if (!strcmp(argv[i], "-")) {
+            inf = stdin;
+        } else {
+            if ((inf = fopen(argv[i], "rb")) == NULL) {
+                perror(argv[i]);
+                continue;
+            }
         }
 
         if ((data = readfile(inf, &len)) == NULL) {
@@ -65,9 +108,14 @@ int main(int argc, char *argv[])
             printf("%02x", digest[j]);
         }
 
-        printf("\t%s\n", argv[i]);
+        if (inf != stdin) {
+            printf("\t%s\n", argv[i]);
+            fclose(inf);
+        } else {
+            printf("\tstdin\n");
+        }
+
         free(data);
-        fclose(inf);
     }
 
     return 0;

@@ -194,8 +194,8 @@ void md5_finalize(md5 *ctx, char *digest)
 
     makechunk(ctx->buf, 0, ctx->M);
     md5round(ctx);
-    memcpy(digest, &ctx->a0, 4);
-    memcpy(digest + 4, &ctx->b0, 4);
-    memcpy(digest + 8, &ctx->c0, 4);
-    memcpy(digest + 12, &ctx->d0, 4);
+    memcpy(digest, &(ctx->a0), 4);
+    memcpy(digest + 4, &(ctx->b0), 4);
+    memcpy(digest + 8, &(ctx->c0), 4);
+    memcpy(digest + 12, &(ctx->d0), 4);
 }

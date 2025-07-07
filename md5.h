@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-int md5(uint8_t *input, size_t len, uint8_t *digest);
+typedef struct md5 md5;
+
+md5 *md5_init(void);
+void md5_add(md5 *ctx, size_t len, char *data);
+void md5_finalize(md5 *ctx, char *digest);
 
 #endif /* MD5_H */

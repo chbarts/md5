@@ -57,10 +57,11 @@ static void version(void)
 int main(int argc, char *argv[])
 {
     uint8_t digest[16];
-    char *data;
+    char tmp[1024];
     size_t len;
     FILE *inf;
     int i = 1, j;
+    md5 *ctx;
 
     if (1 == argc) {
         help(argv[0]);
@@ -91,18 +92,17 @@ int main(int argc, char *argv[])
             }
         }
 
-        if ((data = readfile(inf, &len)) == NULL) {
+        if ((ctx = md5_init()) == NULL) {
             fprintf(stderr, "memory error on %s\n", argv[i]);
             fclose(inf);
             exit(EXIT_FAILURE);
         }
 
-        if (md5(data, len, digest) != 0) {
-            fprintf(stderr, "MD5 error on %s\n", argv[i]);
-            fclose(inf);
-            free(data);
-            exit(EXIT_FAILURE);
+        while ((len = fread(tmp, 1, 1024, inf)) > 0) {
+            md5_add(ctx, len, tmp);
         }
+
+        md5_finalize(ctx, digest);
 
         for (j = 0; j < 16; j++) {
             printf("%02x", digest[j]);
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
             printf("\tstdin\n");
         }
 
-        free(data);
+        free(ctx);
     }
 
     return 0;

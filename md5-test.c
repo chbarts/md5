@@ -4,36 +4,6 @@
 #include <string.h>
 #include "md5.h"
 
-static char *readfile(FILE *inf, size_t *len)
-{
-    char *data;
-    char tmp[1024];
-    size_t res, max;
-
-    *len = 0;
-
-    if ((data = malloc(1024)) == NULL) {
-        return NULL;
-    }
-
-    max = 1024;
-
-    while ((res = fread(tmp, 1, 1024, inf)) > 0) {
-        if ((*len + res) > max) {
-            if ((data = realloc(data, max * 2)) == NULL) {
-                return NULL;
-            }
-
-            max *= 2;
-        }
-
-        memcpy(data + *len, tmp, res);
-        *len += res;
-    }
-
-    return data;
-}
-
 static void help(char pnam[])
 {
     printf("%s [OPTION] [FILES]...\n", pnam);

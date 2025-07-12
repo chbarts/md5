@@ -59,6 +59,19 @@ md5 *md5_init(void)
     return ctx;
 }
 
+void md5_reinit(md5 *ctx)
+{
+    if (!ctx)
+        return;
+
+    ctx->a0 = 0x67452301;
+    ctx->b0 = 0xefcdab89;
+    ctx->c0 = 0x98badcfe;
+    ctx->d0 = 0x10325476;
+    ctx->size = 0;
+    ctx->bsize = 0;
+}
+
 static uint32_t leftrotate(uint32_t in, uint32_t amt)
 {
     uint64_t tmp = ((uint64_t) in) << amt;

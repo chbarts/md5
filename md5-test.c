@@ -82,6 +82,11 @@ int main(int argc, char *argv[])
         i = 2;
     }
 
+    if ((ctx = md5_init()) == NULL) {
+        fprintf(stderr, "memory error\n");
+        exit(EXIT_FAILURE);
+    }
+
     for (; i < argc; i++) {
         if (!strcmp(argv[i], "-")) {
             inf = stdin;
@@ -90,12 +95,6 @@ int main(int argc, char *argv[])
                 perror(argv[i]);
                 continue;
             }
-        }
-
-        if ((ctx = md5_init()) == NULL) {
-            fprintf(stderr, "memory error on %s\n", argv[i]);
-            fclose(inf);
-            exit(EXIT_FAILURE);
         }
 
         while ((len = fread(tmp, 1, 1024, inf)) > 0) {
@@ -115,8 +114,9 @@ int main(int argc, char *argv[])
             printf("\tstdin\n");
         }
 
-        free(ctx);
+        md5_reinit(ctx);
     }
 
+    free(ctx);
     return 0;
 }

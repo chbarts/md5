@@ -3,6 +3,11 @@
 #include <string.h>
 #include "md5.h"
 
+#ifdef DEBUG
+#include <stdio.h>
+#include <ctype.h>
+#endif
+
 typedef struct md5 {
     uint32_t a0, b0, c0, d0;
     uint32_t  M[16];
@@ -71,6 +76,11 @@ static void makechunk(uint8_t * input, uint64_t off, uint32_t * output)
             tmp |= (input[i + off] & 0xFF) << (i * 8);
         }
 
+#ifdef DEBUG
+        printf("%08lx ", (unsigned long) tmp);
+        if ((j % 4) == 3)
+            puts("");
+#endif
         output[j] = tmp;
         tmp = 0;
         off += 4;
@@ -118,6 +128,26 @@ void md5_add(md5 *ctx, size_t len, char *data)
 {
     size_t off = 0, cs = len, nc;
     int r;
+
+#ifdef DEBUG
+    size_t z;
+
+    for (z = 0; z < len; z++) {
+        if (isgraph(data[z]) || (data[z] == ' ')) {
+            printf("'%c' ", data[z]);
+        } else if (data[z] == '\t') {
+            printf(" \t ");
+        } else {
+            printf(" %02x ", (unsigned char) data[z]);
+        }
+
+        if ((z % 16) == 15)
+            puts("");
+    }
+
+    puts("");
+
+#endif
 
     if (ctx->bsize && ((ctx->bsize + len) >= 64)) {
         r = 64 - ctx->bsize;

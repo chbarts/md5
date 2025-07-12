@@ -185,6 +185,7 @@ void md5_add(md5 *ctx, size_t len, char *data)
 
 void md5_finalize(md5 *ctx, char *digest)
 {
+    size_t blen;
     int i;
 
     if (0 == ctx->bsize) {
@@ -214,9 +215,11 @@ void md5_finalize(md5 *ctx, char *digest)
         ctx->buf[i] = 0;
     }
 
+    blen = ctx->size * 8;
+
     for (; i < 64; i++) {
-        ctx->buf[i] = ctx->size & 0xFF;
-        ctx->size = ctx->size >> 8;
+        ctx->buf[i] = blen & 0xFF;
+        blen = blen >> 8;
     }
 
     makechunk(ctx->buf, 0, ctx->M);

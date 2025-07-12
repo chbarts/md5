@@ -133,13 +133,10 @@ void md5_add(md5 *ctx, size_t len, char *data)
     size_t z;
 
     for (z = 0; z < len; z++) {
-        if ((isgraph(data[z]) || (data[z] == ' ')) && (data[z] != '\t')) {
-            printf("'%c' ", data[z]);
-        } else if (data[z] == '\t') {
-            printf(" \\t ");
-        } else {
-            printf(" %02x ", (unsigned char) data[z]);
-        }
+        printf(" %02x ", (unsigned char) data[z]);
+
+        if ((z % 4) == 3)
+            printf(" | ");
 
         if ((z % 16) == 15)
             puts("");

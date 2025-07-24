@@ -71,6 +71,13 @@ int main(int argc, char *argv[])
             md5_add(ctx, len, tmp);
         }
 
+        if (ferror(inf)) {
+            perror(argv[i]);
+            fclose(inf);
+            md5_reinit(ctx);
+            continue;
+        }
+
         md5_finalize(ctx, digest);
 
         for (j = 0; j < 16; j++) {
